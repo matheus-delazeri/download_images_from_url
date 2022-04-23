@@ -1,2 +1,4 @@
 tests/
 images/
+__pycache__/
+.idea/
