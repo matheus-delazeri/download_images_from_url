@@ -22,7 +22,8 @@ if os.path.isfile(sheetDir):
     elif args.i == 'bling':
         products = fileHandler.get_bling_images()
     for sku in products:
-        imagesDict[sku] = image.download_images(sku, products[sku])
+        product = products[sku]
+        imagesDict[sku] = image.download_images(sku, product['basename'], product['images'])
 
     image.print_proccess_info()
     fileHandler.create_csv_from_dict(imagesDict)

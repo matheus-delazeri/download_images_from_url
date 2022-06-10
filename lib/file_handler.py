@@ -1,5 +1,3 @@
-import json
-
 import pandas as pd
 import requests
 import time
@@ -21,14 +19,17 @@ class FileHandler:
         print("\n")
         for index, row in self.df.iterrows():
             product_id = row['sku']
-            products[product_id] = []
+            products[product_id] = {
+                'basename' : row['basename'],
+                'images' : []
+            }
             url = f"https://bling.com.br/Api/v2/produto/{product_id}/json"
             response = requests.get(url, params=payload)
             if response.ok:
                 product_data = response.json()['retorno']['produtos'][0]['produto']
                 images = product_data['imagem']
                 for image in images:
-                    products[product_id].append(image['link'])
+                    products[product_id]['images'].append(image['link'])
             else:
                 print(f"[Erro] Não foi possível requisitar as imagens do produto [{product_id}]")
             print("\r", f"Produtos requisitados [{len(products)}/{self.df.size}]", end="")
@@ -51,16 +52,19 @@ class FileHandler:
         print("\n")
         for index, row in self.df.iterrows():
             product_id = row['sku']
-            products[product_id] = []
+            products[product_id] = {
+                'basename' : row['basename'],
+                'images' : []
+            }
             url = f"https://api.dooca.store/products/{product_id}/images"
             response = requests.get(url, json=data, headers=header)
             if response.ok:
                 images = response.json()
                 for image in images:
-                    products[product_id].append(image['src'])
+                    products[product_id]['images'].append(image['src'])
             else:
                 print(f"[Erro] Não foi possível requisitar as imagens do produto [{product_id}]")
-            print("\r", f"Produtos requisitados [{len(products)}/{self.df.size}]", end="")
+            print("\r", f"Produtos requisitados [{len(products)}]", end="")
         print("\n")
         return products
 
@@ -76,10 +80,13 @@ class FileHandler:
         products = {}
 
         for index, row in self.df.iterrows():
-            products[row['sku']] = []
+            products[row['sku']] = {
+                'basename' : row['basename'],
+                'images' : []
+            }
             for column in self.columns:
                 if "image" in column.lower():
-                    products[row['sku']] += str(row[column]).split(";")
+                    products[row['sku']]['images'].append(str(row[column]).split(";"))
 
         return products
 

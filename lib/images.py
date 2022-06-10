@@ -21,15 +21,17 @@ class Images:
         if not os.path.isdir(self.dir):
             Path(self.dir).mkdir(parents=True, exist_ok=True)
 
-    def download_images(self, sku, images):
+    def download_images(self, sku, basename, images):
         img_num = 1
         self.product_count += 1
         images_names = []
+        if basename == '':
+            basename = sku
         for img_url in images:
             if img_url == '':
                 continue
             img_ext, img_url = self.get_image_extension(img_url)
-            img_name = f"{sku}-{str(img_num)}.{img_ext}"
+            img_name = f"{basename}-{str(img_num)}.{img_ext}"
             result_ok = self.download_from_url(img_url, img_name)
             images_names.append(img_name)
             if not result_ok:
